@@ -1,0 +1,11 @@
+{
+  "name": "image-gallery",
+  "version": "1.0.0",
+  "description": "simple image gallery",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "aymns",
+  "license": "ISC"
+}
