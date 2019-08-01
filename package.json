@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
+    "build": "node-sass  app -o css",
     "test": "mocha"
   },
   "author": "aymns",
@@ -14,6 +15,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.2.0"
+    "mocha": "^6.2.0",
+    "node-sass": "^4.12.0"
   }
 }
