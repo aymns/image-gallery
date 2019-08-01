@@ -47,13 +47,13 @@ let gallery = (function () {
         }
 
 
-        if (page >= pageNumbers)
+        if (page >= pageNumbers - 1)
             nextPageDomElement.hidden = true;
         else
             nextPageDomElement.hidden = false;
 
         if (page < 1 || page > pageNumbers)
-            throw `Out of index excpetion, page ${page} doesn't exists`;
+            return;
 
         currentPage = page;
         let pagination_start_at = (currentPage - 1) * perPage;
