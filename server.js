@@ -10,3 +10,5 @@ app.get('/', function(req, res) {
 app.use('/', express.static(__dirname ));
 
 app.listen(8080);
+
+console.log('see the app here: http://localhost:8080')    
