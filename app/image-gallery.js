@@ -5,40 +5,117 @@
 let gallery = (function () {
 
     let _this = this;
-    let api_key = '11a41946317528f1433988728e7d6140';
-    let api_end_point = 'https://www.flickr.com/services/rest'
+    let gallery_dom_element;
+    let photosContainer;
 
-    async function _init(options) {
-        let images = await fetchData(1, 10);
+    let currentPage = 1;
+    let pageNumbers = 1;
+    let perPage = 10;
+
+    let config = {};
+    let ListOfPhotosFromServer = [];
+    let nextPageDomElement = document.createElement('a');
+    let prevPageDomElement = document.createElement('a');
+
+    async function _init(_config) {
+        config = _config;
+
+        ListOfPhotosFromServer = await _config.jsonSourceAsync();
+        pageNumbers = Math.ceil(ListOfPhotosFromServer.length / perPage);
+
+        gallery_dom_element = document.querySelector(_config.domElementId)
+        renderGalleryHtml();
+        renderPage(1);
         return _this;
     }
 
-    async function fetchData(page, perpage) {
-        return await fetch(`${api_end_point}/?method=flickr.photos.getRecent&api_key=${api_key}&per_page=${perpage}&page=${page}&format=json&nojsoncallback=1`)
-            .then(r => r.json())
-            .then(data => {
-                return data.photos.photo.map(photo => getPhotoSourceUrl(photo));
-            })
-            .catch(e => console.error('cannot get images from api' + e))
+
+    async function renderPrevGalleryPage() {
+        await renderPage(currentPage - 1);
     }
 
-    function getPhotoSourceUrl(photo) {
-        var id = photo.id;
-        var secret = photo.secret;
-        var server_id = photo.server;
-        var farm_id = photo.farm;
+    async function renderNextGalleryPage() {
+        await renderPage(currentPage + 1);
+    }
 
-        return `https://farm${farm_id}.staticflickr.com/${server_id}/${id}_${secret}.jpg`;
+
+    async function renderPage(page) {
+        if (page == 1)
+            prevPageDomElement.hidden = true;
+        else if (page < pageNumbers) {
+            prevPageDomElement.hidden = false;
+        }
+
+
+        if (page >= pageNumbers)
+            nextPageDomElement.hidden = true;
+        else
+            nextPageDomElement.hidden = false;
+
+        if (page < 1 || page > pageNumbers)
+            throw `Out of index excpetion, page ${page} doesn't exists`;
+
+        currentPage = page;
+        let pagination_start_at = (currentPage - 1) * perPage;
+
+        let displayedPhotos = ListOfPhotosFromServer.slice(pagination_start_at, pagination_start_at + perPage)
+        photosContainer.innerHTML = "";
+
+        displayedPhotos.map(function (photo) {
+            let photoElement = document.createElement("div");;
+            photoElement.className = "thumbnail";
+            photoElement.innerHTML = `<label for='modal-1'><img src='${photo.Thumb}'/></label>`;
+            photoElement.addEventListener('click', function () {
+                onPhotoSelected(photo);
+            });
+            photosContainer.appendChild(photoElement)
+        });
+    }
+
+    function renderGalleryHtml() {
+
+        nextPageDomElement.innerText = "next";
+        prevPageDomElement.innerText = "previous";
+
+        nextPageDomElement.addEventListener('click', function () {
+            renderNextGalleryPage();
+        });
+
+        prevPageDomElement.addEventListener('click', function () {
+            renderPrevGalleryPage();
+        });
+
+        photosContainer = document.createElement("div");
+        photosContainer.className = "photos";
+        gallery_dom_element.appendChild(photosContainer);
+
+        var controls = document.createElement("div");
+        controls.className = "controls"
+        controls.appendChild(nextPageDomElement);
+        controls.appendChild(prevPageDomElement);
+        gallery_dom_element.appendChild(controls);
+    }
+
+
+    /*
+        -----------------------------------------
+                        Events
+        -----------------------------------------
+    */
+
+    function onPhotoSelected(photo) {
+        if (config.onPhotoSelected) {
+            config.onPhotoSelected(photo.Original);
+        }
     }
 
     return {
-        init: _init,
-        initialized : initialized
+        init: _init
     }
 }())
 
 
 // support commonjs module
-if(typeof module === "object" && module.exports) {  
-    module.exports  = gallery;
+if (typeof module === "object" && module.exports) {
+    module.exports = gallery;
 }

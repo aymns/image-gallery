@@ -1,15 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Flicker image gallery!</title>
     <link rel="stylesheet" media="all" href="./css/style.css">
-</head>
+</head> 
 <body>
     <div class="container">
         <h1 class="head-title">Awesome gallery</h1>
+
+        <div class="cool-gallery" id="gallery">
+        </div>
     </div>
+
+
+    <input class="modal-state" id="modal-1" type="checkbox" />
+    <div class="modal" id="modal">
+        <label class="modal__bg" for="modal-1"></label>
+        <div class="modal__inner">
+            <label class="modal__close" for="modal-1"></label>
+            <img src='' />
+        </div>
+    </div>
+
+
+
+    <script src="./app/image-gallery.js"></script>
+    <script src="./app/index.js"></script>
 </body>
+
 </html>
