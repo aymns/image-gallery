@@ -41,7 +41,7 @@
         },
     };
 
-    var data = await gallery.init({
+    await gallery.init({
         domElementId: "#gallery",
         jsonSourceAsync: getData,
         onPhotoSelected: function(photo){

@@ -4,7 +4,6 @@
 
 let gallery = (function () {
 
-    let _this = this;
     let gallery_dom_element;
     let photosContainer;
 
