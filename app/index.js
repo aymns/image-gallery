@@ -2,38 +2,17 @@
 
 // demo code ...
 
-(function(){
+(async function(){
 
-    var modal = document.getElementById('modal');
-    var imageViewer = modal.getElementsByTagName("img");
+    let modal = document.getElementById('modal');
+    let imageViewer = modal.getElementsByTagName("img");
 
     let api_key = '11a41946317528f1433988728e7d6140';
     let api_end_point = 'https://www.flickr.com/services/rest';
     let page = 1;
     let perpage = 79;
+
     
-    gallery.init({
-        domElementId: "#gallery",
-        jsonSourceAsync: getData,
-        onPhotoSelected: function(photo){
-            imageViewer[0].src = photo;
-        }
-    });
-
-    async function getData() {
-        return await fetch(`${api_end_point}/?method=flickr.photos.getRecent&api_key=${api_key}&per_page=${perpage}&page=${page}&format=json&nojsoncallback=1`)
-            .then(r => r.json())
-            .then(data => {
-                return data.photos.photo.map(photo => {
-                    return {
-                        Thumb: getPhotoSourceUrl(photo, PHOTO_SIZE.THUMBNAIL),
-                        Original: getPhotoSourceUrl(photo, PHOTO_SIZE.ORIGINAL)
-                    }
-                });
-            })
-            .catch(e => console.error('cannot get images from api' + e));
-    }
-
     let PHOTO_SIZE = {
         THUMBNAIL: {
             value: '_q',
@@ -61,6 +40,29 @@
             size: "original"
         },
     };
+
+    var data = await gallery.init({
+        domElementId: "#gallery",
+        jsonSourceAsync: getData,
+        onPhotoSelected: function(photo){
+            imageViewer[0].src = photo;
+        }
+    });
+
+    async function getData() {
+        return await fetch(`${api_end_point}/?method=flickr.photos.getRecent&api_key=${api_key}&per_page=${perpage}&page=${page}&format=json&nojsoncallback=1`)
+            .then(r => r.json())
+            .then(data => {
+                return data.photos.photo.map(photo => {
+                    return {
+                        Thumb: getPhotoSourceUrl(photo, PHOTO_SIZE.THUMBNAIL),
+                        Original: getPhotoSourceUrl(photo, PHOTO_SIZE.ORIGINAL)
+                    }
+                });
+            })
+            .catch(e => console.error('cannot get images from api' + e));
+    }
+
 
     function getPhotoSourceUrl(photo, size) {
         var id = photo.id;

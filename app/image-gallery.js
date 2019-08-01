@@ -11,14 +11,20 @@ let gallery = (function () {
     let currentPage = 1;
     let pageNumbers = 1;
     let perPage = 10;
+    let selectedImageElement = null;
 
     let config = {};
     let ListOfPhotosFromServer = [];
     let nextPageDomElement = document.createElement('a');
     let prevPageDomElement = document.createElement('a');
 
+
     async function _init(_config) {
         config = _config;
+
+        if (typeof config.perPage === "number") {
+            perPage = config.perPage;
+        }
 
         ListOfPhotosFromServer = await _config.jsonSourceAsync();
         pageNumbers = Math.ceil(ListOfPhotosFromServer.length / perPage);
@@ -26,16 +32,18 @@ let gallery = (function () {
         gallery_dom_element = document.querySelector(_config.domElementId)
         renderGalleryHtml();
         renderPage(1);
-        return _this;
+        return Promise.resolve(this);
     }
 
 
     async function renderPrevGalleryPage() {
         await renderPage(currentPage - 1);
+        onPrevPage();
     }
 
     async function renderNextGalleryPage() {
         await renderPage(currentPage + 1);
+        onNextPage();
     }
 
 
@@ -67,6 +75,7 @@ let gallery = (function () {
             photoElement.innerHTML = `<label for='modal-1'><img src='${photo.Thumb}'/></label>`;
             photoElement.addEventListener('click', function () {
                 onPhotoSelected(photo);
+                selectedImageElement = photoElement;
             });
             photosContainer.appendChild(photoElement)
         });
@@ -109,8 +118,35 @@ let gallery = (function () {
         }
     }
 
+
+    function onNextPage() {
+        if (config.onNextPage) {
+            config.onNextPage(currentPage);
+        }
+    }
+
+
+    function onPrevPage(photo) {
+        if (config.onPrevPage) {
+            config.onPrevPage(currentPage);
+        }
+    }
+
+    /*
+        -----------------------------------------
+                        Public API
+        -----------------------------------------
+    */
+
+
     return {
-        init: _init
+        init: _init,
+        getCurrentPage: () => currentPage,
+        getNumberOfPages: () => pageNumbers,
+        getSelectedImageElement: () => selectedImageElement,
+        getGalleryImageContainer: () => photosContainer,
+        nextPage: renderNextGalleryPage,
+        prevPage: renderPrevGalleryPage
     }
 }())
 
