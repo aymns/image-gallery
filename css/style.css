@@ -33,7 +33,8 @@
 .cool-gallery .controls a {
   padding: 10px 5px;
   color: gray;
-  text-decoration: underline; }
+  text-decoration: underline;
+  cursor: pointer; }
 
 /* Demo
      * =============================== */
